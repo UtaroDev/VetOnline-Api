@@ -14,9 +14,6 @@ Este repositorio contiene el código fuente de una API desarrollada en TypeScrip
 
 ## Tecnologías Utilizadas
 
-## Tecnologías Utilizadas
-
-| Tecnología |
 | ---------- |
 | TypeScript |
 | Node.js    |
