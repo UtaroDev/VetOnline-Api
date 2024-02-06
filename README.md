@@ -14,11 +14,16 @@ Este repositorio contiene el código fuente de una API desarrollada en TypeScrip
 
 ## Tecnologías Utilizadas
 
-- **TypeScript:** Proporciona tipado estático para un código más robusto y mantenible.
-- **Node.js:** Plataforma de ejecución que permite la construcción de aplicaciones escalables en el lado del servidor.
-- **Express:** Framework web para Node.js que simplifica el desarrollo de aplicaciones web y APIs.
-- **MongoDB:** Sistema de gestión de bases de datos NoSQL para el almacenamiento eficiente y flexible de datos.
-- **Prisma:** Herramienta ORM que facilita el acceso y la manipulación de la base de datos.
+## Tecnologías Utilizadas
+
+| Tecnología |
+| ---------- |
+| TypeScript |
+| Node.js    |
+| Express    |
+| MongoDB    |
+| Prisma     |
+
 
 ## Instrucciones de Uso
 
