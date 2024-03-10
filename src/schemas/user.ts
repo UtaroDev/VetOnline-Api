@@ -6,26 +6,27 @@ export const bodyUserSchema = z.object({
       .string()
       .min(2)
       .max(255)
-      .transform((value) => value.trim())
       .refine((value) => /^[a-zA-Z]+$/.test(value), {
         message:
           'El nombre solo puede contener letras de a a z (mayúsculas o minúsculas).'
-      }),
+      })
+      .transform((value) => value.trim()),
 
     lastName: z
       .string()
       .min(2)
       .max(255)
-      .transform((value) => value.trim())
       .refine((value) => /^[a-zA-Z]+$/.test(value), {
         message:
           'El apellido solo puede contener letras de a a z (mayúsculas o minúsculas).'
-      }),
+      })
+      .transform((value) => value.trim()),
 
     email: z
       .string()
       .email()
       .transform((value) => value.trim()),
+
     password: z
       .string()
       .min(8)
@@ -43,8 +44,14 @@ export const bodyUserSchema = z.object({
       .transform((value) => value.trim())
       .refine((value) => /^\d{6,12}$/.test(value), {
         message: 'El número de teléfono debe contener entre 6 y 12 dígitos.'
-      }),
-    address: z.string().min(2).max(255)
+      })
+      .transform((value) => value.trim()),
+
+    address: z
+      .string()
+      .min(2)
+      .max(255)
+      .transform((value) => value.trim())
   })
 })
 
