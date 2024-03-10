@@ -22,25 +22,36 @@ import {
 } from '../helpers/token'
 
 import { sendEmail } from '../helpers/mailControl'
+
 export const register = async (
   req: Request<unknown, unknown, BodyUserType>,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { body } = req
-    const data = body
+    const data = req.body
+    // Normalizacion de datos como mail
+
+    const newObject = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => {
+        return key === 'password' || key === 'phone'
+          ? [key, value.trim()]
+          : [key, value.toLowerCase().trim()]
+      })
+    ) as BodyUserType
+
+    console.log(newObject)
     // Hasheo de password
     const password = data.password
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
     const newData: BodyUserType = {
-      ...data,
+      ...newObject,
       password: hashedPassword
     }
     const user = await authService.register(newData)
-    return httpResponse.CREATED(res, user)
+    return httpResponse.CREATED(res, user.firstName)
   } catch (error) {
     next(error)
   } finally {
