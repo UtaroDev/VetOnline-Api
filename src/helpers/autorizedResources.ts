@@ -10,6 +10,14 @@ interface paramsForIsAuthorized {
   userIdRequest: string | undefined
   userIdData: string | undefined
 }
+/**
+ *
+ *  Espera 3 parametros, userIsAdmin booleano que
+ * @param  userIsAdmin parametro desencriptado del token indica ROL
+ * @param userIdRequest parametro  desencriptado del token indica el ID del usuario
+ * @param userIdData id que la pasas para la comparacion
+ * @returns verdadero o falso dependiendo si es admin y su mismo id
+ */
 export const isAuthorized = ({
   userIsAdmin,
   userIdRequest,
