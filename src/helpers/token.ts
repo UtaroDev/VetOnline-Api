@@ -10,7 +10,6 @@ export const generateToken = (data: BodyUserDataBaseType) => {
   try {
     const token = jwt.sign(
       {
-        userFirstName: data.firstName,
         userRole: data.role,
         userId: data.id
       },
@@ -20,7 +19,6 @@ export const generateToken = (data: BodyUserDataBaseType) => {
 
     const refreshToken = jwt.sign(
       {
-        userFirstName: data.firstName,
         userRole: data.role,
         userId: data.id,
         refresh: 'Es un rt !'
