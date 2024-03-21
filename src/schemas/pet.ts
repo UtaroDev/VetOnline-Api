@@ -1,7 +1,6 @@
 // Esquema de validaciones, en vez de usar Joi, uso Zod porque está hecho para TypeScript
 
 import { z } from 'zod'
-
 export const bodyPetSchema = z.object({
   body: z.object({
     name: z
@@ -29,9 +28,8 @@ export const bodyPetSchema = z.object({
       .refine((value) => /^(macho|hembra)$/.test(value), {
         message: 'Asegúrate de que el sexo especificado sea macho o hembra'
       }),
-    weight: z.string().refine((value) => /^[1-9]\d*$/.test(value), {
-      message: 'Asegurate que el peso sea un entero positivo'
-    }),
+    size: z.enum(['pequeño', 'meadiano', 'grande']),
+    qr: z.instanceof(Buffer),
     ownerId: z.string().length(24)
   })
 })
