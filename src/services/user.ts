@@ -16,7 +16,6 @@ export const userService = {
         id
       },
       include: {
-        appointment: true,
         pet: true
       }
     })
