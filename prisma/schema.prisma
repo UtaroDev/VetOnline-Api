@@ -11,54 +11,57 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  firstName   String        @map("first_name")
-  lastName    String        @map("last_name")
-  email       String        @unique
-  password    String
-  phone       String
-  address     String
-  role        String        @default("user")
-  resetToken  String?       @map("reset_token")
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  email            String   @unique
+  password         String
+  role             String   @default("user")
+  resetToken       String?  @map("reset_token")
   resetTokenStatus Boolean? @default(false) @map("reset_token_status")
-  pet         Pet[]
-  appointment Appointment[]
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  profile          Profile?
+  pet              Pet[]
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
+model Profile {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  phone     String
+  address   String
+  userId    String   @unique @map("owner_id") @db.ObjectId
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
 model Pet {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   specie      String
   sex         String
-  weight      String
-  ownerId     String        @map("owner_id") @db.ObjectId
-  Owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  appointment Appointment[]
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  size        String
+  qr          Bytes
+  LostPetPost LostPetPost?
+  ownerId     String       @map("owner_id") @db.ObjectId
+  Owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
 
   @@map("pets")
 }
 
-model Appointment {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  start       DateTime
-  end         DateTime
-  title       String
+model LostPetPost {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  petId       String @unique @map("pet_id") @db.ObjectId
+  Pet         Pet    @relation(fields: [petId], references: [id])
   description String
-  area        String
-  state       String
-  doctorName  String   @map("doctor_name")
-  ownerId     String   @map("owner_id") @db.ObjectId
-  Owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  petId       String   @map("pet_id") @db.ObjectId
-  Pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  city        String
+  province    String
 
-  @@map("appointments")
+  @@map("lost_pet_posts")
 }
