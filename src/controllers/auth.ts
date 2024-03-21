@@ -2,10 +2,9 @@
 
 import type { Response, Request, NextFunction } from 'express'
 
-import type { BodyUserType } from '../types/user'
 import type {
   BodyEmailType,
-  BodyLoginType,
+  BodyAuthType,
   BodyNewPasswordTokenType,
   ParamsNewPasswordTokenType
 } from '../types/auth'
@@ -24,34 +23,25 @@ import {
 import { sendEmail } from '../helpers/mailControl'
 
 export const register = async (
-  req: Request<unknown, unknown, BodyUserType>,
+  req: Request<unknown, unknown, BodyAuthType>,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const data = req.body
-    // Normalizacion de datos como mail
-
-    const newObject = Object.fromEntries(
-      Object.entries(data).map(([key, value]) => {
-        return key === 'password' || key === 'phone'
-          ? [key, value.trim()]
-          : [key, value.toLowerCase().trim()]
-      })
-    ) as BodyUserType
-
-    console.log(newObject)
+    // Normalizacion del mail
+    const emailNormalized = data.email.toLowerCase().trim()
     // Hasheo de password
     const password = data.password
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const newData: BodyUserType = {
-      ...newObject,
+    const newData: BodyAuthType = {
+      email: emailNormalized,
       password: hashedPassword
     }
     const user = await authService.register(newData)
-    return httpResponse.CREATED(res, user.firstName)
+    return httpResponse.CREATED(res, user)
   } catch (error) {
     next(error)
   } finally {
@@ -60,17 +50,16 @@ export const register = async (
 }
 
 export const login = async (
-  req: Request<unknown, unknown, BodyLoginType>,
+  req: Request<unknown, unknown, BodyAuthType>,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { body } = req
     const data = body
-
     const { email, password } = data
 
-    const user = await authService.findEmail(email)
+    const user = await authService.findEmail(email.toLocaleLowerCase().trim())
     if (user === null) {
       return httpResponse.FORBIDDEN(res, 'Invalid credentials')
     }
