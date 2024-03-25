@@ -2,13 +2,12 @@ import { Router } from 'express'
 
 import { schemaValidator } from '../middlewares/schemaValidator'
 import {
-  bodyAuthSchema,
+  bodyUserSchema,
   bodyEmailSchema,
   newPasswordTokenSchema
-} from '../schemas/auth'
+} from '../schemas/user'
 
 import {
-  register,
   login,
   refreshToken,
   forgotPassword,
@@ -17,9 +16,7 @@ import {
 
 const router = Router()
 
-router.route('/register').post(schemaValidator(bodyAuthSchema), register)
-
-router.route('/login').post(schemaValidator(bodyAuthSchema), login)
+router.route('/login').post(schemaValidator(bodyUserSchema), login)
 
 router.route('/refresh/token').post(refreshToken)
 

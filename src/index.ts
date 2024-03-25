@@ -23,7 +23,7 @@ app.use(
     algorithms: ['HS256']
   }).unless({
     path: [
-      '/api/auth/register',
+      '/api/user/register',
       '/api/auth/login',
       '/api/auth/refresh/token',
       '/api/auth/forgot-password',

@@ -1,4 +1,9 @@
 // Funcion que se usa para saber si un usuario es admin o no
+/**
+ *
+ * @param  userIsAdmin parametro desencriptado del token indica ROL
+ * @returns verdadero o falso dependiendo si es admin
+ */
 export const isAdmin = (userIsAdmin: boolean | undefined): boolean => {
   return userIsAdmin !== null && userIsAdmin !== undefined && userIsAdmin
 }

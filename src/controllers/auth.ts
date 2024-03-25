@@ -1,56 +1,23 @@
-// Aca tiene que estar el controler para el registro e inicio de sesion  -Sacar createUser y poner register
-
 import type { Response, Request, NextFunction } from 'express'
 
 import type {
   BodyEmailType,
-  BodyAuthType,
   BodyNewPasswordTokenType,
   ParamsNewPasswordTokenType
 } from '../types/auth'
-
+import type { BodyUserSchema } from '../types/user'
 import { httpResponse } from '../helpers/httpStatus'
 import { authService } from '../services/auth'
-import bcrypt from 'bcrypt'
-
 import {
   generateToken,
   verifyToken,
   generateResetToken,
   verifyResetToken
 } from '../helpers/token'
-
 import { sendEmail } from '../helpers/mailControl'
-
-export const register = async (
-  req: Request<unknown, unknown, BodyAuthType>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const data = req.body
-    // Normalizacion del mail
-    const emailNormalized = data.email.toLowerCase().trim()
-    // Hasheo de password
-    const password = data.password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
-
-    const newData: BodyAuthType = {
-      email: emailNormalized,
-      password: hashedPassword
-    }
-    const user = await authService.register(newData)
-    return httpResponse.CREATED(res, user)
-  } catch (error) {
-    next(error)
-  } finally {
-    console.log('Create users finalized')
-  }
-}
-
+import bcrypt from 'bcrypt'
 export const login = async (
-  req: Request<unknown, unknown, BodyAuthType>,
+  req: Request<unknown, unknown, BodyUserSchema>,
   res: Response,
   next: NextFunction
 ) => {
