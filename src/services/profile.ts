@@ -6,19 +6,18 @@ const prisma = new PrismaClient()
 
 //  Logica de negocio
 export const profileService = {
-  create: async (data: BodyProfileType) => {
-    return await prisma.profile.create({ data })
-  },
   getAll: async () => {
     return await prisma.profile.findMany()
   },
-
   getOne: async (id: string) => {
     return await prisma.profile.findUnique({
       where: {
         id
       }
     })
+  },
+  create: async (data: BodyProfileType) => {
+    return await prisma.profile.create({ data })
   },
 
   update: async (id: string, data: BodyProfileType) => {
