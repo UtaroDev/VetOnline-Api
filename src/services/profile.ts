@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
-import type { BodyProfileType } from '../types/profile'
+import type { BodyProfileType, BodyUpdateProfileType } from '../types/profile'
 
 const prisma = new PrismaClient()
 
@@ -20,7 +20,7 @@ export const profileService = {
     return await prisma.profile.create({ data })
   },
 
-  update: async (id: string, data: BodyProfileType) => {
+  update: async (id: string, data: BodyUpdateProfileType) => {
     return await prisma.profile.update({
       where: { id },
       data

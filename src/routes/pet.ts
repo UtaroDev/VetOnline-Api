@@ -22,12 +22,7 @@ router.route('/').get(decodedPayload, getAllPets).post(
 router
   .route('/:id')
   .get(schemaValidator(idPetSchema), decodedPayload, getPet)
-  .put(
-    schemaValidator(updatePetSchema),
-    decodedPayload,
-
-    updatePet
-  )
+  .patch(schemaValidator(updatePetSchema), decodedPayload, updatePet)
   .delete(schemaValidator(idPetSchema), decodedPayload, deletePet)
 
 export { router }

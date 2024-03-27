@@ -1,5 +1,9 @@
 import type { Response, Request, NextFunction } from 'express'
-import type { BodyProfileType, IdProfileType } from '../types/profile'
+import type {
+  BodyProfileType,
+  BodyUpdateProfileType,
+  IdProfileType
+} from '../types/profile'
 
 import { httpResponse } from '../helpers/httpStatus'
 import { profileService } from '../services/profile'
@@ -30,10 +34,16 @@ export const getProfile = async (
   next: NextFunction
 ) => {
   try {
+    const { userIdRequest, userIsAdmin } = req
     const { id } = req.params
     const profile = await profileService.getOne(id)
     if (profile === null) {
-      return httpResponse.NOT_FOUND(res, 'User not found')
+      return httpResponse.NOT_FOUND(res, 'Profile not found not found')
+    }
+    if (
+      !isAuthorized({ userIsAdmin, userIdRequest, userIdData: profile.userId })
+    ) {
+      return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
     return httpResponse.OK(res, profile)
   } catch (error) {
@@ -55,8 +65,16 @@ export const createProfile = async (
     if (!isAuthorized({ userIsAdmin, userIdRequest, userIdData: dataId })) {
       return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
-    const profile = await profileService.create(data)
-    return httpResponse.CREATED(res, profile)
+    const newObject = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => {
+        return key === 'userId'
+          ? [key, value]
+          : [key, value.toLowerCase().trim()]
+      })
+    ) as BodyProfileType
+
+    const newProfile = await profileService.create(newObject)
+    return httpResponse.CREATED(res, newProfile)
   } catch (error) {
     next(error)
   } finally {
@@ -65,20 +83,41 @@ export const createProfile = async (
 }
 
 export const updateProfile = async (
-  req: Request<IdProfileType, unknown, BodyProfileType>,
+  req: Request<IdProfileType, unknown, BodyUpdateProfileType>,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { body, params, userIsAdmin, userIdRequest } = req
     const { id } = params
-    const profileUser = await profileService.getOne(id)
-    const dataId = profileUser?.userId
+    const data = body
+    const profile = await profileService.getOne(id)
+
+    // Comprobacion de que el userId al que le va a generar la relacion sea el mismo que el suyo
+    if (data?.userId !== userIdRequest && data?.userId !== undefined) {
+      return httpResponse.UNPROCESSABLE_ENTITY(
+        res,
+        'Error al intentar cambiar id',
+        'No puedes cambiar de id'
+      )
+    }
+    if (profile === null) {
+      return httpResponse.NOT_FOUND(res, 'Profile not found')
+    }
+    const dataId = profile?.userId
     if (!isAuthorized({ userIsAdmin, userIdRequest, userIdData: dataId })) {
       return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
-    const profile = await profileService.update(id, body)
-    return httpResponse.OK(res, profile)
+    const newObject = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => {
+        return key === 'userId'
+          ? [key, value]
+          : [key, value.toLowerCase().trim()]
+      })
+    ) as BodyUpdateProfileType
+
+    const profileUpdated = await profileService.update(id, newObject)
+    return httpResponse.OK(res, profileUpdated)
   } catch (error) {
     next(error)
   } finally {
@@ -94,16 +133,19 @@ export const deleteProfile = async (
   try {
     const { params, userIsAdmin, userIdRequest } = req
     const { id } = params
-    const profileUser = await profileService.getOne(id)
-    const dataId = profileUser?.userId
+    const profile = await profileService.getOne(id)
+    if (profile === null) {
+      return httpResponse.NOT_FOUND(res, 'Profile not found')
+    }
+    const dataId = profile?.userId
     if (!isAuthorized({ userIsAdmin, userIdRequest, userIdData: dataId })) {
       return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
-    const profile = await profileService.delete(id)
-    return httpResponse.OK(res, profile)
+    const profileDeleted = await profileService.delete(id)
+    return httpResponse.OK(res, profileDeleted)
   } catch (error) {
     next(error)
   } finally {
-    console.log('User has deleted')
+    console.log('Profile has deleted')
   }
 }

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
-import type { BodyPetType } from '../types/pet'
+import type { BodyPetType, BodyUpdatePetType } from '../types/pet'
 const prisma = new PrismaClient()
 
 export const petService = {
@@ -17,7 +17,7 @@ export const petService = {
   create: async (data: BodyPetType) => {
     return await prisma.pet.create({ data })
   },
-  update: async (id: string, data: BodyPetType) => {
+  update: async (id: string, data: BodyUpdatePetType) => {
     return await prisma.pet.update({
       where: { id },
       data
