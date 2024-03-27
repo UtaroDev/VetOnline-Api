@@ -12,7 +12,7 @@ export const bodyProfileSchema = z.object({
         message: 'El nombre solo puede contener 255 letras'
       })
       .transform((value) => value.trim())
-      .refine((value) => /^[a-zA-Z]+$/.test(value), {
+      .refine((value) => /^[a-zA-Z\s]+$/.test(value), {
         message:
           'El nombre solo puede contener letras de a a z (mayúsculas o minúsculas).'
       }),
@@ -26,7 +26,7 @@ export const bodyProfileSchema = z.object({
         message: 'El apellido solo puede contener 255 letras'
       })
       .transform((value) => value.trim())
-      .refine((value) => /^[a-zA-Z]+$/.test(value), {
+      .refine((value) => /^[a-zA-Z\s]+$/.test(value), {
         message:
           'El apellido solo puede contener letras de a a z (mayúsculas o minúsculas).'
       }),
@@ -48,6 +48,9 @@ export const bodyProfileSchema = z.object({
   })
 })
 
+export const updateBodyUserSchema = z.object({
+  body: bodyProfileSchema.shape.body.partial()
+})
 export const idProfileSchema = z.object({
   params: z.object({
     id: z.string().length(24)
@@ -56,5 +59,5 @@ export const idProfileSchema = z.object({
 
 export const updateProfileSchema = z.object({
   params: idProfileSchema.shape.params,
-  body: bodyProfileSchema.shape.body
+  body: updateBodyUserSchema.shape.body
 })

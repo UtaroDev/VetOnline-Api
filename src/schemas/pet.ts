@@ -8,9 +8,9 @@ export const bodyPetSchema = z.object({
       .min(2)
       .max(255)
       .transform((value) => value.trim())
-      .refine((value) => /^[a-zA-Z]+$/.test(value), {
+      .refine((value) => /^[a-zA-Z\s]+$/.test(value), {
         message:
-          'El nombre solo puede contener letras de a a z (mayúsculas o minúsculas).'
+          'El nombre solo puede contener letras de a a z (mayúsculas o minúsculas) y espacios.'
       }),
     specie: z
       .string()
@@ -28,12 +28,14 @@ export const bodyPetSchema = z.object({
       .refine((value) => /^(macho|hembra)$/.test(value), {
         message: 'Asegúrate de que el sexo especificado sea macho o hembra'
       }),
-    size: z.enum(['pequeño', 'meadiano', 'grande']),
-    qr: z.instanceof(Buffer),
+    size: z.enum(['pequeño', 'mediano', 'grande']),
     ownerId: z.string().length(24)
   })
 })
 
+export const updateBodyPetSchema = z.object({
+  body: bodyPetSchema.shape.body.partial()
+})
 export const idPetSchema = z.object({
   params: z.object({
     id: z.string().length(24)
@@ -41,6 +43,6 @@ export const idPetSchema = z.object({
 })
 
 export const updatePetSchema = z.object({
-  body: bodyPetSchema.shape.body,
+  body: updateBodyPetSchema.shape.body,
   params: idPetSchema.shape.params
 })
