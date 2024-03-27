@@ -26,15 +26,16 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
-  phone     String
-  address   String
-  userId    String   @unique @map("owner_id") @db.ObjectId
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  isCompleted Boolean  @default(false) @map("is_completed")
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  phone       String
+  address     String
+  userId      String   @unique @map("owner_id") @db.ObjectId
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("profiles")
 }
@@ -45,7 +46,6 @@ model Pet {
   specie      String
   sex         String
   size        String
-  qr          Bytes
   LostPetPost LostPetPost?
   ownerId     String       @map("owner_id") @db.ObjectId
   Owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
