@@ -1,10 +1,11 @@
 import type { Response, Request, NextFunction } from 'express'
 // Se usan los tipos
-import type { IdPetType, BodyPetType } from '../types/pet'
+import type { IdPetType, BodyPetType, BodyUpdatePetType } from '../types/pet'
 
 import { httpResponse } from '../helpers/httpStatus'
 import { petService } from '../services/pet'
 import { isAdmin, isAuthorized } from '../helpers/autorizedResources'
+
 const getAllPets = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userIsAdmin } = req
@@ -56,12 +57,15 @@ const createPet = async (
     if (!isAuthorized({ userIsAdmin, userIdRequest, userIdData: ownerId })) {
       return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
-    const sexLowerCase = data.sex.toLowerCase()
-    const reformedSex = {
-      ...data,
-      sex: sexLowerCase
-    }
-    const pet = await petService.create(reformedSex)
+    const newObject = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => {
+        if (key === 'ownerId') {
+          return [key, value]
+        }
+        return [key, value.toLowerCase().trim()]
+      })
+    ) as BodyPetType
+    const pet = await petService.create(newObject)
     return httpResponse.CREATED(res, pet)
   } catch (error) {
     next(error)
@@ -71,7 +75,7 @@ const createPet = async (
 }
 
 const updatePet = async (
-  req: Request<IdPetType, unknown, BodyPetType>,
+  req: Request<IdPetType, unknown, BodyUpdatePetType>,
   res: Response,
   next: NextFunction
 ) => {
@@ -80,10 +84,22 @@ const updatePet = async (
     const { id } = params
     const pet = await petService.getOne(id)
     const ownerId = pet?.ownerId
+
     if (!isAuthorized({ userIsAdmin, userIdRequest, userIdData: ownerId })) {
       return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
     }
-    const petUpdated = await petService.update(id, body)
+    if (body.ownerId !== userIdRequest) {
+      return httpResponse.UNAUTHORIZED(res, 'Unauthorized for this action')
+    }
+    const newObject = Object.fromEntries(
+      Object.entries(body).map(([key, value]) => {
+        if (key === 'ownerId') {
+          return [key, value]
+        }
+        return [key, value.toLowerCase().trim()]
+      })
+    ) as BodyUpdatePetType
+    const petUpdated = await petService.update(id, newObject)
     return httpResponse.OK(res, petUpdated)
   } catch (error) {
     next(error)
