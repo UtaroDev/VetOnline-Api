@@ -3,18 +3,26 @@ import {
   getAllProfiles,
   getProfile,
   updateProfile,
-  deleteProfile
+  deleteProfile,
+  createProfile
 } from '../controllers/profile'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { idProfileSchema, updateProfileSchema } from '../schemas/profile'
+import {
+  bodyProfileSchema,
+  idProfileSchema,
+  updateProfileSchema
+} from '../schemas/profile'
 import { decodedPayload } from '../middlewares/decodePayload'
 const router = Router()
 
-router.route('/').get(decodedPayload, getAllProfiles)
+router
+  .route('/')
+  .get(decodedPayload, getAllProfiles)
+  .post(schemaValidator(bodyProfileSchema), decodedPayload, createProfile)
 
 router
   .route('/:id')
   .get(schemaValidator(idProfileSchema), decodedPayload, getProfile)
-  .put(schemaValidator(updateProfileSchema), decodedPayload, updateProfile)
+  .patch(schemaValidator(updateProfileSchema), decodedPayload, updateProfile)
   .delete(schemaValidator(idProfileSchema), decodedPayload, deleteProfile)
 export { router }
